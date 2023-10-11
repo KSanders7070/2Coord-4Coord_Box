@@ -2,6 +2,9 @@
 
 title 2Coord-4Coord box
 
+rem when not debugging, make this value =false
+SET debug=false
+
 :HELLO
 
 	ECHO.
@@ -36,10 +39,14 @@ title 2Coord-4Coord box
 :USER_INPUT
 
 	echo.
-	set /p FAC_ID=Type/paste Facility ID and press enter: 
-	set /p COORDS=Type/paste the coordinate and press enter: 
-	rem set FAC_ID=test
-	rem set COORDS=-90.0,40.0,-100.0,30.0
+	
+	if "%debug%"=="false" (
+		set /p FAC_ID=Type/paste Facility ID and press enter: 
+		set /p COORDS=Type/paste the coordinate and press enter: 
+	) else (
+		set FAC_ID=test
+		set COORDS=-90.0,40.0,-100.0,30.0
+	)
 
 :GETCOORDS
 
@@ -67,7 +74,7 @@ title 2Coord-4Coord box
 	echo.
 	
 	(
-		echo ^{"type":"FeatureCollection","features":^[^{"geometry":^{"coordinates":^[^[^[%NE_COORDS%^],^[%SE_COORDS%^],^[%SW_COORDS%^],^[%NW_COORDS%^]^]^],"type":"Polygon"^},"properties":^{^},"type":"Feature"^}^]^}
+		echo ^{"type":"Feature","properties":^{"name":"%FAC_ID%_AOI"^},"geometry":^{"type":"Polygon","coordinates":^[^[^[%NE_COORDS%^],^[%SE_COORDS%^],^[%SW_COORDS%^],^[%NW_COORDS%^]^]^]^}^}
 	)>"%FAC_ID%_AOI.geojson"
 
 	echo 		...Exported to: %FAC_ID%_AOI.geojson
@@ -75,7 +82,12 @@ title 2Coord-4Coord box
 	echo.
 	echo.
 
-goto USER_INPUT
+	if "%debug%"=="false" (
+		goto USER_INPUT
+	) else (
+		pause
+		exit
+	)
 
 
 
